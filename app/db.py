@@ -79,10 +79,6 @@ class Segment(Base):
 
     # OpenAI provided metadata
     generated_by: Mapped[str]
-    temperature: Mapped[float]
-    avg_logprob: Mapped[float]
-    compression_ratio: Mapped[float]
-    no_speech_prob: Mapped[float]
 
 
 # Database config

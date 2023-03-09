@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, List, Union
+from collections import namedtuple
 
 import ffmpeg
 import os
@@ -69,12 +70,37 @@ class MediaManager:
     def _transcribe_and_save(self, media_obj: Media, whisper_model: str, **whisper_args):
         """Transcribe the audio file using whisper and save the transcript to the database"""
 
-        segments, info = self._transcribe(media_obj.filepath, whisper_model, **whisper_args)
+
+        # Transcribe the audio file and put the variables into raw segments and raw info
+        raw_segments, raw_info = self._transcribe(media_obj.filepath, whisper_model, **whisper_args)
+
+        # turn individual segment tuples into a list of dictionaries
+        segment_dicts = []
+        segment_id=0
+        for segment in raw_segments:
+            segment_dicts.append({
+                "text": segment.text,
+                "start": segment.start,
+                "end": segment.end,
+                "id": segment_id
+            })
+            segment_id+=1
 
 
-        transcript = {segments: list(segments), info: info}
+        # get combined text from all segments
+        raw_text = " ".join([segment.text for segment in raw_segments])
 
-        transcriptText = " ".join([segment.text for segment in segments])
+        # Create a transcript object compatible with whisper's writer
+        transcript = { 
+            "segments": segment_dicts, 
+            "info": raw_info,
+            "text": raw_text
+        }
+
+        
+
+
+
 
         # Write transcripts into the same directory as the audio file
         audio_dir = Path(media_obj.filepath).parent.absolute().as_posix()
@@ -85,14 +111,14 @@ class MediaManager:
             Transcript(
                 media_id=media_obj.id,
                 media=media_obj,
-                text=transcriptText,
-                language=transcript[1].language,
+                text=raw_text,
+                language=raw_info.language,
                 generated_by = whisper_model,
             )
         )
 
         # Add all the segments to the database 
-        for segment in segments:
+        for segment in segment_dicts:
             self.session.add(
                 Segment(
                     media_id=media_obj.id,
