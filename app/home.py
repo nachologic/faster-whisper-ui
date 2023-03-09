@@ -46,13 +46,21 @@ with st.sidebar.expander("➕ &nbsp; Add Media", expanded=False):
             youtube_url = st.text_input("Youtube video or playlist URL")
         elif source_type == "Upload":
             input_files = st.file_uploader(
-                "Add one or more files", type=["mp4", "avi", "mov", "mkv", "mp3", "wav"], accept_multiple_files=True
+                "Add one or more files", type=["mp4", "avi", "mov", "mkv", "mp3", "wav", "m4a"], accept_multiple_files=True
             )
+        model = ["whisper-tiny", "whisper-base", "whisper-small", "whisper-medium"]
+        model = st.selectbox(
+            "Model",
+            options=model,
+            index=model.index(st.session_state.whisper_params["whisper_model"]),
+        )
+        initial_prompt = st.text_area("Vocabulary")
+        
         task_options = ["transcribe", "translate"]
         task = st.selectbox(
             "Task", options=task_options, index=task_options.index(st.session_state.whisper_params["task"])
         )
-        add_media = st.form_submit_button(label="Add Media!")
+        add_media = st.form_submit_button(label="Add to queue")
 
     if add_media:
         source = None
@@ -67,11 +75,20 @@ with st.sidebar.expander("➕ &nbsp; Add Media", expanded=False):
             else:
                 st.error("Please upload files")
 
+        if initial_prompt:
+            st.session_state.whisper_params["initial_prompt"] = initial_prompt
+
         # Lowercase the source type
         source_type = source_type.lower()
 
         # Update session state whisper params
         st.session_state.whisper_params["task"] = task
+
+        # Update session state whisper model
+        st.session_state.whisper_params["whisper_model"] = model
+
+        # Update session state whisper initial prompt
+        st.session_state.whisper_params["initial_prompt"] = initial_prompt
 
         if source:
             media_manager.add(

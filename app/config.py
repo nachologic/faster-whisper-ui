@@ -21,14 +21,13 @@ DEBUG = False
 # --------------
 # Default settings
 WHISPER_DEFAULT_SETTINGS = {
-    "whisper_model": "base",
+    "whisper_model": "whisper-base",
     "temperature": 0.0,
     "temperature_increment_on_fallback": 0.2,
     "no_speech_threshold": 0.6,
-    "logprob_threshold": -1.0,
+    "log_prob_threshold": -1.0,
     "compression_ratio_threshold": 2.4,
     "condition_on_previous_text": True,
-    "verbose": False,
     "task": "transcribe",
 }
 WHISPER_SETTINGS_FILE = DATA_DIR / ".whisper_settings.json"

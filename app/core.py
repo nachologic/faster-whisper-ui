@@ -6,20 +6,26 @@ from pathlib import Path
 from typing import Any, List, Union
 
 import ffmpeg
+import os
 import numpy as np
-import whisper
+import whisper, whisper.utils
+from faster_whisper import WhisperModel
 from config import MEDIA_DIR
 from db import ENGINE, Media, Segment, Transcript
 from pytube import Playlist, YouTube
 from sqlalchemy.orm import Session
 
 
+# ----------------
 # Whisper transcription functions
 # ----------------
 @lru_cache(maxsize=1)
 def get_whisper_model(whisper_model: str):
-    """Get a whisper model from the cache or download it if it doesn't exist"""
-    model = whisper.load_model(whisper_model)
+    filePath = Path(__file__)
+    cwdParent = filePath.parents[1]
+    whisper_model_path = cwdParent.joinpath("models", whisper_model).absolute().as_posix()
+    
+    model = WhisperModel(whisper_model_path, "cpu")
     return model
 
 
@@ -41,6 +47,8 @@ class MediaManager:
         # NOTE: If mulitple models are selected, this may keep all of them in memory depending on the cache size
         transcriber = get_whisper_model(whisper_model)
 
+        
+
         # Set configs & transcribe
         if whisper_args["temperature_increment_on_fallback"] is not None:
             whisper_args["temperature"] = tuple(
@@ -61,26 +69,30 @@ class MediaManager:
     def _transcribe_and_save(self, media_obj: Media, whisper_model: str, **whisper_args):
         """Transcribe the audio file using whisper and save the transcript to the database"""
 
-        transcript = self._transcribe(media_obj.filepath, whisper_model, **whisper_args)
+        segments, info = self._transcribe(media_obj.filepath, whisper_model, **whisper_args)
+
+
+        transcript = {segments: list(segments), info: info}
+
+        transcriptText = " ".join([segment.text for segment in segments])
 
         # Write transcripts into the same directory as the audio file
-        audio_dir = Path(media_obj.filepath).parent
+        audio_dir = Path(media_obj.filepath).parent.absolute().as_posix()
         writer = whisper.utils.get_writer("all", audio_dir)
         writer(transcript, "transcript")
-
         # Add transcript to the database
         self.session.add(
             Transcript(
                 media_id=media_obj.id,
                 media=media_obj,
-                text=transcript["text"],
-                language=transcript["language"],
-                generated_by=f"whisper-{whisper_model}",
+                text=transcriptText,
+                language=transcript[1].language,
+                generated_by = whisper_model,
             )
         )
 
-        # Add all the segments to the database
-        for segment in transcript["segments"]:
+        # Add all the segments to the database 
+        for segment in segments:
             self.session.add(
                 Segment(
                     media_id=media_obj.id,
@@ -89,11 +101,7 @@ class MediaManager:
                     text=segment["text"],
                     start=segment["start"],
                     end=segment["end"],
-                    generated_by=f"whisper-{whisper_model}",
-                    temperature=segment["temperature"],
-                    avg_logprob=segment["avg_logprob"],
-                    compression_ratio=segment["compression_ratio"],
-                    no_speech_prob=segment["no_speech_prob"],
+                    generated_by=whisper_model
                 )
             )
         self.session.commit()

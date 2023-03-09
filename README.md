@@ -30,7 +30,7 @@ Note: If you're using a CPU-only machine, your runtime can be sped-up by using q
 Once you're set up, you can run the app with:
 
 ```
-streamlit run app/01_🏠_Home.py
+streamlit run app/home.py
 ```
 
 This will open a new tab in your browser with the app. You can then select a YouTube URL or local file & click "Run Whisper" to run the model on the selected media.
