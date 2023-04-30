@@ -5,6 +5,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, List, Union
 from collections import namedtuple
+import time
 
 import ffmpeg
 import os
@@ -60,10 +61,13 @@ class MediaManager:
 
         del whisper_args["temperature_increment_on_fallback"]
 
+        time_at_start = time.perf_counter()
         transcript = transcriber.transcribe(
             audio_path,
             **whisper_args,
         )
+        time_at_end = time.perf_counter()
+        elapsed_time = time_at_end - time_at_start
 
         return transcript
 
@@ -96,11 +100,6 @@ class MediaManager:
             "info": raw_info,
             "text": raw_text
         }
-
-        
-
-
-
 
         # Write transcripts into the same directory as the audio file
         audio_dir = Path(media_obj.filepath).parent.absolute().as_posix()

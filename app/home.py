@@ -38,7 +38,7 @@ def get_formatted_date(date_str: str) -> str:
 
 # Add view
 # ---------
-with st.sidebar.expander("➕ &nbsp; Add Media", expanded=False):
+with st.sidebar.expander("New transcript  qa", expanded=False):
     # # Render media type selection on the sidebar & the form
     source_type = st.radio("Media Source", ["YouTube", "Upload"], label_visibility="collapsed")
     with st.form("input_form"):
@@ -255,11 +255,11 @@ else:
     back_col, del_col = st.sidebar.columns(2)
     with back_col:
         # Add a button to show the list view
-        if st.button("◀️ &nbsp; Back to list", key="back-to-list-main"):
+        if st.button("back", key="back-to-list-main"):
             st.session_state.list_mode = True
             st.experimental_rerun()
     with del_col:
-        if st.button("🗑️ Delete Media", key=f"delete-{media['id']}"):
+        if st.button("delete", key=f"delete-{media['id']}"):
             media_manager.delete(media["id"])
             st.session_state.list_mode = True
             st.experimental_rerun()

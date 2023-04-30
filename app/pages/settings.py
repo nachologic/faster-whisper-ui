@@ -38,7 +38,7 @@ with st.form("whisper_settings_form"):
         "Logprob Threshold",
         min_value=-20.0,
         max_value=0.0,
-        value=st.session_state.whisper_params["logprob_threshold"],
+        value=st.session_state.whisper_params["log_prob_threshold"],
         step=0.1,
     )
     compression_ratio_threshold = st.slider(
@@ -51,7 +51,6 @@ with st.form("whisper_settings_form"):
     condition_on_previous_text = st.checkbox(
         "Condition on previous text", value=st.session_state.whisper_params["condition_on_previous_text"]
     )
-    verbose = st.checkbox("Verbose", value=st.session_state.whisper_params["verbose"])
     task_options = ["transcribe", "translate"]
     task = st.selectbox(
         "Default mode", options=task_options, index=task_options.index(st.session_state.whisper_params["task"])
