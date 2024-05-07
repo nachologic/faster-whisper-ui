@@ -7,7 +7,6 @@ from typing import Any, List, Union
 from collections import namedtuple
 import time
 
-import ffmpeg
 import os
 import numpy as np
 import whisper, whisper.utils
