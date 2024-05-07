@@ -13,3 +13,4 @@ SQLAlchemy==2.0.3 # https://github.com/sqlalchemy/sqlalchemy
 # --------------------
 streamlit==1.18.1 # https://github.com/streamlit/streamlit
 ffmpeg-python==0.2.0
+ffmpeg==4.3.1
