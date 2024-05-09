@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-openai-whisper = "==20230124"
+openai-whisper = "==20231117"
 pytube = "==12.1.2"
 sqlalchemy = "==2.0.3"
 streamlit = "==1.18.1"
