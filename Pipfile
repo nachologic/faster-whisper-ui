@@ -4,11 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-openai-whisper = "==20231117"
+openai-whisper = "*"
 pytube = "==12.1.2"
 sqlalchemy = "==2.0.3"
 streamlit = "==1.18.1"
 ffmpeg-python = "==0.2.0"
+altair = "*"
 
 [dev-packages]
 
