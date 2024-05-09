@@ -48,7 +48,7 @@ with st.sidebar.expander("New transcript  qa", expanded=False):
             input_files = st.file_uploader(
                 "Add one or more files", type=["mp4", "avi", "mov", "mkv", "mp3", "wav", "m4a"], accept_multiple_files=True
             )
-        model = ["whisper-tiny", "whisper-base", "whisper-small", "whisper-medium"]
+        model = ["faster-whisper-tiny", "faster-whisper-base", "faster-whisper-small", "faster-whisper-medium"]
         model = st.selectbox(
             "Model",
             options=model,
