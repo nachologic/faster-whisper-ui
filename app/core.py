@@ -22,7 +22,7 @@ from sqlalchemy.orm import Session
 # ----------------
 @lru_cache(maxsize=1)
 def get_whisper_model(whisper_model: str):
-    whisper_model_path = whisper_model
+    whisper_model_path = f"openai/{whisper_model}"
     
     model = WhisperModel(whisper_model_path, "cpu")
     return model
