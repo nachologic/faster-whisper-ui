@@ -22,9 +22,7 @@ from sqlalchemy.orm import Session
 # ----------------
 @lru_cache(maxsize=1)
 def get_whisper_model(whisper_model: str):
-    filePath = Path(__file__)
-    cwdParent = filePath.parents[1]
-    whisper_model_path = cwdParent.joinpath("models", whisper_model).absolute().as_posix()
+    whisper_model_path = whisper_model
     
     model = WhisperModel(whisper_model_path, "cpu")
     return model
