@@ -14,7 +14,7 @@ if "whisper_params" not in st.session_state:
 # --------------
 st.write("### ⚙️ Whisper Settings")
 with st.form("whisper_settings_form"):
-    model_options = ["whisper-tiny", "whisper-base", "whisper-small", "whisper-medium"]
+    model_options = ["faster-whisper-tiny", "faster-whisper-base", "faster-whisper-small", "faster-whisper-medium"]
     selected_model = model_options.index(st.session_state.whisper_params["whisper_model"])
     whisper_model = st.selectbox("Model", options=model_options, index=selected_model)
     temperature = st.number_input(
